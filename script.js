@@ -33,7 +33,14 @@ function gameBoard() {
     console.log(board[2]);
   }
 
-  return { getBoard, mark, printBoard, getEmptySpace };
+  const reset = () => {
+    for (let i = 0; i < rows; i++) {
+      board[i] = [];
+      for (let j = 0; j < columns; j++) board[i].push("");
+    }
+  };
+
+  return { getBoard, mark, printBoard, getEmptySpace, reset };
 }
 
 function gameController(
@@ -108,7 +115,19 @@ function gameController(
 
     if (succeed == 1) {
       didWin = checkWin();
-      changeActivePlayer();
+      if (didWin == 1) {
+        alert(getActivePlayer().playerName + "Won!");
+        board.reset();
+        activePlayer = players[0];
+      } else {
+        if (didWin == 0) {
+          board.reset();
+          activePlayer = players[0];
+          alert("Tie");
+        } else {
+          changeActivePlayer();
+        }
+      }
     } else {
     }
   };
@@ -117,3 +136,8 @@ function gameController(
 }
 
 controller = gameController();
+
+function screenController() {
+  const updateScreen = () => {};
+  const clickHandler = () => {};
+}

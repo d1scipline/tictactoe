@@ -1,3 +1,37 @@
-p {
-  color: blue;
+html {
+  height: 100vh;
+}
+
+body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+}
+
+.board {
+  width: 600px;
+  height: 600px;
+  display: grid;
+  border: solid black 2px;
+}
+
+.y {
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+
+.x {
+  border: solid black 2px;
+}
+
+.x[mark="X"] {
+  background-image: url("assets/x.svg");
+  background-size: cover;
+}
+
+.x[mark="O"] {
+  background-image: url("assets/o.svg");
+  background-size: cover;
 }
