@@ -135,10 +135,10 @@ function screenController() {
   controller = gameController();
   const boardDOM = document.querySelector(".board");
   const resetButton = document.querySelector("button");
-
+  const p = document.querySelector("p");
   const updateScreen = () => {
     const board = controller.getBoard();
-
+    p.innerText = controller.getActivePlayer().playerName + "'s turn";
     boardDOM.innerHTML = "";
     for (let i = 0; i < 3; i++) {
       let y = document.createElement("div");
