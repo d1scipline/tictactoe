@@ -182,7 +182,7 @@ function screenController() {
       setTimeout(() =>
         alert(
           player +
-            " won! \n Score: " +
+            " won! \nScore: " +
             controller.getScore()[0] +
             "-" +
             controller.getScore()[1]
