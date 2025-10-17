@@ -120,9 +120,7 @@ function gameController(
 
   const restart = () => {
     board.reset();
-    players[0].score = 0;
-    players[1].score = 0;
-    activePlayer = players[0];
+    changeActivePlayer();
   };
 
   const getScore = () => {
