@@ -45,8 +45,8 @@ function gameController(
   const board = gameBoard();
 
   players = [
-    { playerName: playerOneName, sign: "X" },
-    { playerName: playerTwoName, sign: "O" },
+    { playerName: playerOneName, sign: "X", score: 0 },
+    { playerName: playerTwoName, sign: "O", score: 0 },
   ];
 
   activePlayer = players[0];
@@ -104,6 +104,7 @@ function gameController(
     if (succeed == 1) {
       didWin = checkWin();
       if (didWin == 1) {
+        getActivePlayer().score += 1;
         return 1;
       } else {
         if (didWin == 0) {
@@ -119,7 +120,13 @@ function gameController(
 
   const restart = () => {
     board.reset();
+    players[0].score = 0;
+    players[1].score = 0;
     activePlayer = players[0];
+  };
+
+  const getScore = () => {
+    return [players[0].score, players[1].score];
   };
 
   return {
@@ -128,11 +135,14 @@ function gameController(
     getBoard: board.getBoard,
     reset: board.reset,
     restart,
+    getScore,
   };
 }
 
 function screenController() {
-  controller = gameController();
+  name1 = prompt("Player 1 name: ");
+  name2 = prompt("Player 2 name: ");
+  controller = gameController(name1, name2);
   const boardDOM = document.querySelector(".board");
   const resetButton = document.querySelector("button");
   const p = document.querySelector("p");
@@ -169,7 +179,15 @@ function screenController() {
     updateScreen();
     if (win == 1) {
       player = controller.getActivePlayer().playerName;
-      setTimeout(() => alert(player + " won!"));
+      setTimeout(() =>
+        alert(
+          player +
+            " won! \n Score: " +
+            controller.getScore()[0] +
+            "-" +
+            controller.getScore()[1]
+        )
+      );
       controller.reset();
     }
     if (win == 0) {
