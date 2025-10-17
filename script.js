@@ -16,8 +16,8 @@ function gameBoard() {
   function mark(y, x, playerSign) {
     if (board[y][x] == "") {
       board[y][x] = playerSign;
+      emptySpace = emptySpace - 1;
       return 1;
-      emptySpace -= 1;
     } else {
       return 0;
     }
@@ -26,21 +26,16 @@ function gameBoard() {
   const getEmptySpace = () => {
     return emptySpace;
   };
-  //Wil be deleted
-  function printBoard() {
-    console.log(board[0]);
-    console.log(board[1]);
-    console.log(board[2]);
-  }
 
   const reset = () => {
     for (let i = 0; i < rows; i++) {
       board[i] = [];
       for (let j = 0; j < columns; j++) board[i].push("");
     }
+    emptySpace = 9;
   };
 
-  return { getBoard, mark, printBoard, getEmptySpace, reset };
+  return { getBoard, mark, getEmptySpace, reset };
 }
 
 function gameController(
@@ -69,8 +64,6 @@ function gameController(
   };
 
   const checkWin = () => {
-    //todo
-
     boardArr = board.getBoard();
 
     //check rows
@@ -83,7 +76,6 @@ function gameController(
           boardArr[1][i] == boardArr[2][i] &&
           boardArr[0][i] != "")
       ) {
-        console.log("Win by row or column");
         return 1;
       }
     }
@@ -96,13 +88,11 @@ function gameController(
         boardArr[1][1] == boardArr[2][0] &&
         boardArr[1][1] != "")
     ) {
-      console.log("Win by diagonal");
       return 1;
     }
 
     //check tie
-    if (board.getEmptySpace == 0) {
-      console.log("Tie");
+    if (board.getEmptySpace() == 0) {
       return 0;
     } else {
       return -1;
@@ -111,33 +101,91 @@ function gameController(
 
   const playRound = (y, x) => {
     succeed = board.mark(y, x, getActivePlayer().sign);
-    board.printBoard();
-
     if (succeed == 1) {
       didWin = checkWin();
       if (didWin == 1) {
-        alert(getActivePlayer().playerName + "Won!");
-        board.reset();
-        activePlayer = players[0];
+        return 1;
       } else {
         if (didWin == 0) {
-          board.reset();
-          activePlayer = players[0];
-          alert("Tie");
+          return 0;
         } else {
           changeActivePlayer();
         }
       }
     } else {
+      return -1;
     }
   };
 
-  return { getActivePlayer, playRound, getBoard: board.getBoard };
-}
+  const restart = () => {
+    board.reset();
+    activePlayer = players[0];
+  };
 
-controller = gameController();
+  return {
+    getActivePlayer,
+    playRound,
+    getBoard: board.getBoard,
+    reset: board.reset,
+    restart,
+  };
+}
 
 function screenController() {
-  const updateScreen = () => {};
-  const clickHandler = () => {};
+  controller = gameController();
+  const boardDOM = document.querySelector(".board");
+  const resetButton = document.querySelector("button");
+
+  const updateScreen = () => {
+    const board = controller.getBoard();
+
+    boardDOM.innerHTML = "";
+    for (let i = 0; i < 3; i++) {
+      let y = document.createElement("div");
+      y.setAttribute("class", "y");
+      boardDOM.appendChild(y);
+      for (let j = 0; j < 3; j++) {
+        let x = document.createElement("div");
+        x.setAttribute("class", "x");
+        x.setAttribute("data-y", i);
+
+        x.setAttribute("data-x", j);
+
+        if (board[i][j] == "X") {
+          x.setAttribute("mark", "X");
+        }
+        if (board[i][j] == "O") {
+          x.setAttribute("mark", "O");
+        }
+        y.appendChild(x);
+      }
+    }
+  };
+
+  const clickHandler = (e) => {
+    let y = e.target.getAttribute("data-y");
+    let x = e.target.getAttribute("data-x");
+    win = controller.playRound(y, x);
+    updateScreen();
+    if (win == 1) {
+      player = controller.getActivePlayer().playerName;
+      setTimeout(() => alert(player + " won!"));
+      controller.reset();
+    }
+    if (win == 0) {
+      setTimeout(() => alert("Tie!"));
+      controller.reset();
+    }
+  };
+
+  const resetFunc = (e) => {
+    controller.restart();
+    updateScreen();
+  };
+
+  boardDOM.addEventListener("click", clickHandler);
+  resetButton.addEventListener("click", resetFunc);
+  updateScreen();
 }
+
+screenController();
